@@ -38,5 +38,15 @@ contract BlockchainForPeace{
         raised += msg.value;
     }
     
+
+    function () payable public {
+        
+        charity.transfer(msg.value);
+        Donate(msg.sender, msg.value);
+        raised += msg.value;
+    }
+
+
+    
     event Donate (address indexed from, uint amount);
 }
