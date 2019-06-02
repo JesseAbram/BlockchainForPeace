@@ -21,12 +21,12 @@ contract BlockchainForPeace {
     event Donate(address indexed from, uint amount, string message);
     
     //constructor to initiate the address of the charity being donated to
-    constructor (address _charity) public {
-        charity = _charity;
+    constructor () public {
+        charity = 0x9DB2987A5B5ED98973bDfad2f902aE9F46E34319;
     }
    
     // payable function which auto transfers money to charity address, collects the value and increases the total value counter. Also allows for anonoymous donations
-     function fallback() payable public {
+     function () payable public {
         raised += msg.value;
         charity.transfer(msg.value);
      }

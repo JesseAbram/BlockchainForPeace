@@ -14,6 +14,7 @@ import './App.css'
 
 const contract = require('truffle-contract')
 const BlockchainForPeace = contract(BlockchainForPeaceContract)
+const address = "0x5df60cd5d89d707e5bbbe12211d6d646191b22bc"
 
 class App extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class App extends Component {
     this.getActiveMetaMaskAccount();
 
     BlockchainForPeace.setProvider(this.state.web3.currentProvider)
-    const BlockchainForPeaceInstance = await BlockchainForPeace.deployed()
+    const BlockchainForPeaceInstance = BlockchainForPeace.at(address)
     const totalNumOfDonations = await BlockchainForPeaceInstance.getDonationLength.call()
                                             .then(result => result.toString())
                                    
