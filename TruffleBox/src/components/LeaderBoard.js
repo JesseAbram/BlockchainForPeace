@@ -10,7 +10,7 @@ class LeaderBoard extends Component {
                         <tr>
                             <th>Donor</th>
                             <th>Ether Donated</th>
-                            <th>Message Of Peace</th>
+                            <th>Forever On The Block</th>
                         </tr>
                     </thead>
                     <tbody>

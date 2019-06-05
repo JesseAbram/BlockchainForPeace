@@ -6,6 +6,9 @@ import 'bulma/css/bulma.css';
 import NavBar from './components/NavBar.js';
 import DonationInputs from './components/DonationInputs.js';
 import LeaderBoard from './components/LeaderBoard.js';
+import DialogScrollable from './components/dialog.js';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -14,7 +17,6 @@ import './App.css'
 
 const contract = require('truffle-contract')
 const BlockchainForPeace = contract(BlockchainForPeaceContract)
-const address = "0x5df60cd5d89d707e5bbbe12211d6d646191b22bc"
 
 class App extends Component {
   constructor(props) {
@@ -27,38 +29,42 @@ class App extends Component {
       BlockchainForPeaceInstance: null,
       totalNumOfDonations: 0,
       donations: [],
+      raised: 0
     }
     this.createMessage = this.createMessage.bind(this)
+
   }
 
-  componentWillMount() {
+  async componentWillMount() {
     // Get network provider and web3 instance.
     // See utils/getWeb3 for more info.
 
     getWeb3
-    .then(results => {
+    .then(async results => {
       this.setState({
         web3: results.web3
-      })
+      }) 
       // Instantiate contract once web3 provided.
-      this.instantiateContract()
+      await this.instantiateContract()
+      await this.getRaised();
     })
     .catch(() => {
       console.log('Error finding web3.')
     })
+
+ 
   }
 
   instantiateContract = async () => {
     this.getActiveMetaMaskAccount();
 
     BlockchainForPeace.setProvider(this.state.web3.currentProvider)
-    const BlockchainForPeaceInstance = BlockchainForPeace.at(address)
+    const BlockchainForPeaceInstance = await BlockchainForPeace.deployed()
     const totalNumOfDonations = await BlockchainForPeaceInstance.getDonationLength.call()
                                             .then(result => result.toString())
                                    
-
     const donations = await this.getDonationList(BlockchainForPeaceInstance, totalNumOfDonations)
-
+    
     return this.setState({ BlockchainForPeaceInstance, donations, totalNumOfDonations }, () => {
       //Once the App State is set, I run a check to see if active MetaMask account changed - setInterval Method suggested by MetaMask FAQ https://tinyurl.com/ycokp3h6
       setInterval(() => {
@@ -71,40 +77,59 @@ class App extends Component {
   getActiveMetaMaskAccount = () => {
     this.state.web3.eth.getAccounts( (err, accounts) => {
         this.setState({ account : accounts[0]})
+      
+
     })
 }
 
-  createMessage = (message, ethValue) => {
+  createMessage = async (message, ethValue) => {
     this.state.BlockchainForPeaceInstance.messageForPeace(message, { from: this.state.account, value: ethValue})
 
+    await this.getRaised();
   }
 
   getDonationList = async (contractInstance, numOfDonations) => {
     // fetch Donations and Rebuild Array of Donations Object/Struct
     const promiseArr = [];
   
-    for (let i = 0; i < numOfDonations; i++ ) 
-        { promiseArr[i] = await contractInstance.getDonation(i) }
+    for (let i = 0; i < numOfDonations; i++ ) { 
+      promiseArr[i] = await contractInstance.getDonation(i) 
+    }
 
     return promiseArr.map( ([ donorAddress, message, value ]) => ({ donorAddress, message, value: value.toString() / 10 ** 18 }))
   }
 
+ getRaised = async () => {
+  const raised = await this.state.BlockchainForPeaceInstance.getRaised()
+   // get donation list
+  this.setState({raised: raised / 10 ** 18})
+}
   
 
   render() {
+    // this.getRaised().then(x =>(x))
+
     return (
+      <MuiThemeProvider>       
       <div className="App">
-        <NavBar />
+      <DialogScrollable />
+       <NavBar />
         <section className="section" >
           <div className='container'>
             <DonationInputs createMessage={this.createMessage} />
           </div>
+          <h1>
+            Raised = {this.state.raised} ethers
+          </h1>
           <div className="container" >
             <LeaderBoard donations={this.state.donations} />
           </div>
           
         </section>
+
       </div>
+     </MuiThemeProvider>
+
     );
   }
 }

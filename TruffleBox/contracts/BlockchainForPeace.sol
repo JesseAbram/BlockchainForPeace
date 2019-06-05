@@ -1,11 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract BlockchainForPeace {
     
 
     // to see the total raised 
     uint public raised;
-    address public charity; 
+    address payable charity; 
     
     //struct for the donation 
     struct Donation {
@@ -22,16 +22,16 @@ contract BlockchainForPeace {
     
     //constructor to initiate the address of the charity being donated to
     constructor () public {
-        charity = 0x9DB2987A5B5ED98973bDfad2f902aE9F46E34319;
+        charity = 0x7cbac639dbb1Ec92DC0FBDDEEdbbf3Cfd397387D;
     }
    
     // payable function which auto transfers money to charity address, collects the value and increases the total value counter. Also allows for anonoymous donations
-     function () payable public {
+     function () payable external {
         raised += msg.value;
         charity.transfer(msg.value);
      }
     // optional message to be sent with donation, peace message.
-    function messageForPeace(string _message) payable public {
+    function messageForPeace(string memory _message) payable public {
         require(msg.value > 0);
         donations.push(Donation(msg.sender, _message, msg.value));
         charity.transfer(msg.value);
@@ -39,7 +39,7 @@ contract BlockchainForPeace {
         emit Donate(msg.sender, msg.value, _message);
     }
 
-    function getDonation(uint _index) public view returns (address, string, uint) {
+    function getDonation(uint _index) public view returns (address, string memory, uint) {
         Donation memory don = donations[_index];
         return (don.donor, don.message, don.value);
     }
