@@ -45,7 +45,7 @@ class NavBar extends Component {
               <div className="field is-grouped">
                 
                 <p className="control">
-                  <a className="button is-info" href='https://meetup.com'>
+                  <a className="button is-info" href='http://crypto4charity.org/' target="_blank" rel="noopener noreferrer">
                     <span>
                       About The event 
                     </span>
@@ -53,7 +53,7 @@ class NavBar extends Component {
                 </p>
                 
                 <p className="control">
-                  <a className="button is-info" href='https://www.doctorswithoutborders.org/'>
+                  <a className="button is-info" href='https://abilityonline.org/' target="_blank" rel="noopener noreferrer">
                     <span>
                       About the Charity 
                     </span>
